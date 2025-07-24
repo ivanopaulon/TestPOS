@@ -1,0 +1,260 @@
+@page "/pos"
+@using TestPOS.Models
+@using TestPOS.Services
+@inject ProductService ProductService
+@inject CartService CartService
+@rendermode InteractiveServer
+
+<PageTitle>TestPOS - Touch POS System</PageTitle>
+
+<link href="~/pos.css" rel="stylesheet" />
+
+<div class="pos-container">
+    <!-- Header -->
+    <div class="pos-header">
+        <div class="logo">
+            <img src="logo.svg" alt="TestPOS" class="logo-img" />
+        </div>
+        <div class="cart-summary">
+            <button class="btn btn-cart" @onclick="ToggleCart">
+                🛒 Carrello (@CartService.ItemCount) - €@CartService.Total.ToString("F2")
+            </button>
+        </div>
+    </div>
+
+    <div class="pos-main">
+        <!-- Categories Sidebar -->
+        <div class="categories-sidebar">
+            <h3>Categorie</h3>
+            <div class="categories-grid">
+                @foreach (var category in categories)
+                {
+                    <button class="btn btn-category @(selectedCategoryId == category.Id ? "active" : "")"
+                            style="background-color: @category.Color"
+                            @onclick="() => SelectCategory(category.Id)">
+                        <div class="category-icon">@category.Icon</div>
+                        <div class="category-name">@category.Name</div>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Products Area -->
+        <div class="products-area">
+            <div class="products-header">
+                <h3>@GetSelectedCategoryName()</h3>
+            </div>
+            <div class="products-grid">
+                @foreach (var product in GetDisplayProducts())
+                {
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="@product.ImageUrl" alt="@product.Name" />
+                        </div>
+                        <div class="product-info">
+                            <h4>@product.Name</h4>
+                            <p class="product-description">@product.Description</p>
+                            <div class="product-price">€@product.Price.ToString("F2")</div>
+                        </div>
+                        <button class="btn btn-add-to-cart" @onclick="() => AddToCart(product)">
+                            Aggiungi
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Cart Sidebar (shown when cart is open) -->
+        @if (showCart)
+        {
+            <div class="cart-sidebar">
+                <div class="cart-header">
+                    <h3>Carrello</h3>
+                    <button class="btn btn-close" @onclick="ToggleCart">✕</button>
+                </div>
+                <div class="cart-items">
+                    @if (CartService.GetItems().Any())
+                    {
+                        @foreach (var item in CartService.GetItems())
+                        {
+                            <div class="cart-item">
+                                <div class="item-info">
+                                    <h5>@item.Product.Name</h5>
+                                    <div class="item-price">€@item.Product.Price.ToString("F2")</div>
+                                </div>
+                                <div class="item-controls">
+                                    <button class="btn btn-sm btn-quantity" @onclick="() => DecreaseQuantity(item.Product)">-</button>
+                                    <span class="quantity">@item.Quantity</span>
+                                    <button class="btn btn-sm btn-quantity" @onclick="() => IncreaseQuantity(item.Product)">+</button>
+                                </div>
+                                <div class="item-total">€@item.Total.ToString("F2")</div>
+                            </div>
+                        }
+                        <div class="cart-summary-detail">
+                            <div class="summary-line">
+                                <span>Subtotale:</span>
+                                <span>€@CartService.Total.ToString("F2")</span>
+                            </div>
+                            <div class="summary-line">
+                                <span>IVA (22%):</span>
+                                <span>€@((CartService.Total * 0.22m).ToString("F2"))</span>
+                            </div>
+                            <div class="summary-line total-line">
+                                <span>Totale:</span>
+                                <span>€@((CartService.Total * 1.22m).ToString("F2"))</span>
+                            </div>
+                        </div>
+                        <div class="cart-actions">
+                            <button class="btn btn-clear" @onclick="ClearCart">Svuota</button>
+                            <button class="btn btn-checkout" @onclick="Checkout">Checkout</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-cart">
+                            <p>Il carrello è vuoto</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Receipt Modal -->
+    @if (showReceipt && currentReceipt != null)
+    {
+        <div class="receipt-modal">
+            <div class="receipt-content">
+                <div class="receipt-header">
+                    <h3>Scontrino #@currentReceipt.ReceiptNumber</h3>
+                    <button class="btn btn-close" @onclick="CloseReceipt">✕</button>
+                </div>
+                <div class="receipt-body">
+                    <div class="receipt-date">@currentReceipt.Date.ToString("dd/MM/yyyy HH:mm")</div>
+                    
+                    <div class="receipt-items">
+                        @foreach (var item in currentReceipt.Items)
+                        {
+                            <div class="receipt-item">
+                                <span class="item-name">@item.Product.Name</span>
+                                <span class="item-qty">x@item.Quantity</span>
+                                <span class="item-price">€@item.Total.ToString("F2")</span>
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="receipt-totals">
+                        <div class="receipt-line">
+                            <span>Subtotale:</span>
+                            <span>€@currentReceipt.Subtotal.ToString("F2")</span>
+                        </div>
+                        <div class="receipt-line">
+                            <span>IVA (22%):</span>
+                            <span>€@currentReceipt.Tax.ToString("F2")</span>
+                        </div>
+                        <div class="receipt-line total">
+                            <span><strong>TOTALE:</strong></span>
+                            <span><strong>€@currentReceipt.Total.ToString("F2")</strong></span>
+                        </div>
+                    </div>
+                    
+                    <div class="receipt-footer">
+                        <p>Pagamento: @currentReceipt.PaymentMethod</p>
+                        <p>Grazie per la visita!</p>
+                    </div>
+                </div>
+                <div class="receipt-actions">
+                    <button class="btn btn-print" @onclick="PrintReceipt">Stampa</button>
+                    <button class="btn btn-new-order" @onclick="NewOrder">Nuovo Ordine</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Category> categories = new();
+    private List<Product> products = new();
+    private int selectedCategoryId = 1;
+    private bool showCart = false;
+    private bool showReceipt = false;
+    private Receipt? currentReceipt = null;
+
+    protected override void OnInitialized()
+    {
+        categories = ProductService.GetCategories();
+        products = ProductService.GetProducts();
+        CartService.OnCartChanged += StateHasChanged;
+    }
+
+    private void SelectCategory(int categoryId)
+    {
+        selectedCategoryId = categoryId;
+    }
+
+    private string GetSelectedCategoryName()
+    {
+        var category = categories.FirstOrDefault(c => c.Id == selectedCategoryId);
+        return category?.Name ?? "Tutti i prodotti";
+    }
+
+    private List<Product> GetDisplayProducts()
+    {
+        return ProductService.GetProductsByCategory(selectedCategoryId);
+    }
+
+    private void AddToCart(Product product)
+    {
+        CartService.AddItem(product);
+    }
+
+    private void ToggleCart()
+    {
+        showCart = !showCart;
+    }
+
+    private void IncreaseQuantity(Product product)
+    {
+        CartService.AddItem(product);
+    }
+
+    private void DecreaseQuantity(Product product)
+    {
+        CartService.RemoveItem(product);
+    }
+
+    private void ClearCart()
+    {
+        CartService.ClearCart();
+    }
+
+    private void Checkout()
+    {
+        currentReceipt = CartService.CompleteOrder();
+        showCart = false;
+        showReceipt = true;
+    }
+
+    private void CloseReceipt()
+    {
+        showReceipt = false;
+        currentReceipt = null;
+    }
+
+    private void PrintReceipt()
+    {
+        // In a real application, this would integrate with a receipt printer
+        // For demo purposes, we'll just show an alert
+        // You could also implement a print dialog here
+    }
+
+    private void NewOrder()
+    {
+        CloseReceipt();
+    }
+
+    public void Dispose()
+    {
+        CartService.OnCartChanged -= StateHasChanged;
+    }
+}

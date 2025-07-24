@@ -1,0 +1,53 @@
+{
+  "Files": [
+    {
+      "Id": "/home/runner/work/TestPOS/TestPOS/obj/Debug/net8.0/scopedcss/projectbundle/TestPOS.bundle.scp.css",
+      "PackagePath": "staticwebassets/TestPOS.bundle.scp.css"
+    },
+    {
+      "Id": "/home/runner/work/TestPOS/TestPOS/wwwroot/app.css",
+      "PackagePath": "staticwebassets/app.css"
+    },
+    {
+      "Id": "/home/runner/work/TestPOS/TestPOS/wwwroot/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/home/runner/work/TestPOS/TestPOS/wwwroot/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/home/runner/work/TestPOS/TestPOS/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "/home/runner/work/TestPOS/TestPOS/wwwroot/logo.svg",
+      "PackagePath": "staticwebassets/logo.svg"
+    },
+    {
+      "Id": "/home/runner/work/TestPOS/TestPOS/wwwroot/placeholder-product.png",
+      "PackagePath": "staticwebassets/placeholder-product.png"
+    },
+    {
+      "Id": "/home/runner/work/TestPOS/TestPOS/wwwroot/pos.css",
+      "PackagePath": "staticwebassets/pos.css"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.TestPOS.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.TestPOS.props",
+      "PackagePath": "build\\TestPOS.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.TestPOS.props",
+      "PackagePath": "buildMultiTargeting\\TestPOS.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.TestPOS.props",
+      "PackagePath": "buildTransitive\\TestPOS.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
