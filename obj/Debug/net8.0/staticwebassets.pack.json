@@ -21,6 +21,18 @@
       "PackagePath": "staticwebassets/favicon.png"
     },
     {
+      "Id": "/home/runner/work/TestPOS/TestPOS/wwwroot/logo.svg",
+      "PackagePath": "staticwebassets/logo.svg"
+    },
+    {
+      "Id": "/home/runner/work/TestPOS/TestPOS/wwwroot/placeholder-product.png",
+      "PackagePath": "staticwebassets/placeholder-product.png"
+    },
+    {
+      "Id": "/home/runner/work/TestPOS/TestPOS/wwwroot/pos.css",
+      "PackagePath": "staticwebassets/pos.css"
+    },
+    {
       "Id": "obj/Debug/net8.0/staticwebassets/msbuild.TestPOS.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },
